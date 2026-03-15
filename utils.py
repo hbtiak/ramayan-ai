@@ -5,7 +5,7 @@ import random
 import streamlit as st
 import time
 
-API_URL = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-2"
+API_URL = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
 
 headers = {
     "Authorization": f"Bearer {st.secrets['HF_TOKEN']}"
