@@ -1,28 +1,35 @@
-from diffusers import StableDiffusionPipeline
-import torch
+import requests
+from PIL import Image
+from io import BytesIO
 import random
+import streamlit as st
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
 
-pipe = StableDiffusionPipeline.from_pretrained(
-    "runwayml/stable-diffusion-v1-5"
-)
-
-pipe = pipe.to(device)
+headers = {
+    "Authorization": f"Bearer {st.secrets['HF_TOKEN']}"
+}
 
 def generate_ai_image(scene, style, exaggeration):
 
     prompt = f"""
     Epic mythological illustration of {scene},
     {style} style,
-    exaggerated character design level {exaggeration},
+    exaggeration level {exaggeration},
     cinematic lighting,
-    detailed artwork
+    highly detailed artwork
     """
 
-    image = pipe(prompt).images[0]
+    response = requests.post(
+        API_URL,
+        headers=headers,
+        json={"inputs": prompt}
+    )
 
-    return image
+    if response.status_code != 200:
+        raise Exception(response.text)
+
+    return Image.open(BytesIO(response.content))
 
 
 def suggest_layout(scene):
