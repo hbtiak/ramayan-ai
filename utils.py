@@ -4,7 +4,7 @@ from io import BytesIO
 import random
 import streamlit as st
 
-API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
+API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2"
 
 headers = {
     "Authorization": f"Bearer {st.secrets['HF_TOKEN']}"
@@ -20,16 +20,25 @@ def generate_ai_image(scene, style, exaggeration):
     highly detailed artwork
     """
 
-    response = requests.post(
-        API_URL,
-        headers=headers,
-        json={"inputs": prompt}
-    )
+    try:
+        response = requests.post(
+            API_URL,
+            headers=headers,
+            json={"inputs": prompt},
+            timeout=120
+        )
 
-    if response.status_code != 200:
-        raise Exception(response.text)
+        if response.status_code != 200:
+            st.error("HuggingFace API Error")
+            st.write(response.text)
+            return None
 
-    return Image.open(BytesIO(response.content))
+        return Image.open(BytesIO(response.content))
+
+    except Exception as e:
+        st.error("Image generation failed")
+        st.write(str(e))
+        return None
 
 
 def suggest_layout(scene):
@@ -53,4 +62,4 @@ def suggest_colors(mood):
         "Sunset": ["orange","pink","violet"]
     }
 
-    return palettes.get(mood,[])
+    return palettes.get(mood, [])
