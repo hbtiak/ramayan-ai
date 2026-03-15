@@ -1,70 +1,129 @@
-
 import streamlit as st
 from PIL import Image
 from utils import generate_ai_image, suggest_layout, suggest_colors
 
-st.set_page_config(page_title="Epic AI Studio", layout="wide")
+st.set_page_config(
+    page_title="Epic AI Storytelling Studio",
+    layout="wide"
+)
 
-st.title("Epic AI Studio")
-st.caption("Human-Centered AI for Mythological Storytelling Demo")
+st.title("🎨 Human-Centered AI for Epic Storytelling")
+st.subheader("Artist + AI Co-Creation Tool")
 
-left, center, right = st.columns([1,2,1])
+st.markdown(
+"""
+Upload your caricature or sketch, describe a scene, and let AI help turn it into an epic illustration.
+The artist remains in control while AI suggests layouts, colors, and enhanced artwork.
+"""
+)
 
-with left:
-    st.header("Scene Controls")
+# --- Sidebar controls ---
 
-    scene = st.text_area(
-        "Describe Scene",
-        "Hanuman flying toward Lanka carrying the mountain"
+st.sidebar.header("Creative Controls")
+
+scene = st.sidebar.text_area(
+    "Scene Description",
+    "Rama aiming his bow at Ravana during the final battle"
+)
+
+style = st.sidebar.selectbox(
+    "Art Style",
+    [
+        "Comic book",
+        "Caricature",
+        "Indian miniature painting",
+        "Digital painting",
+        "Mythological epic",
+        "Watercolor illustration"
+    ]
+)
+
+exaggeration = st.sidebar.slider(
+    "Character Exaggeration",
+    1,
+    10,
+    5
+)
+
+mood = st.sidebar.selectbox(
+    "Color Mood",
+    ["Heroic", "Divine", "Battle", "Sunset"]
+)
+
+# --- Main layout ---
+
+col1, col2 = st.columns(2)
+
+# Artist upload
+with col1:
+
+    st.header("Artist Input")
+
+    uploaded_file = st.file_uploader(
+        "Upload your caricature / sketch",
+        type=["png", "jpg", "jpeg"]
     )
 
-    style = st.selectbox(
-        "Art Style",
-        ["Caricature", "Mythological Painting", "Comic Book", "Watercolor"]
-    )
+    if uploaded_file:
 
-    exaggeration = st.slider(
-        "Character Exaggeration",
-        0, 100, 40
-    )
+        artist_image = Image.open(uploaded_file)
 
-    mood = st.selectbox(
-        "Scene Mood",
-        ["Heroic","Divine","Battle","Sunset"]
-    )
+        st.image(
+            artist_image,
+            caption="Uploaded Artist Sketch",
+            width="stretch"
+        )
 
-    generate = st.button("Generate Illustration")
-
-with center:
-    st.header("Artist Canvas")
-
-    uploaded = st.file_uploader(
-        "Upload Sketch",
-        type=["png","jpg","jpeg"]
-    )
-
-    if uploaded:
-        sketch = Image.open(uploaded)
-        st.image(sketch, use_column_width=True)
     else:
-        st.info("Upload a rough sketch to guide the AI")
+        artist_image = None
 
-with right:
+
+# AI suggestions
+with col2:
+
     st.header("AI Suggestions")
 
     if st.button("Suggest Layout"):
-        st.success(suggest_layout(scene))
+
+        layout = suggest_layout(scene)
+
+        st.success(f"Suggested Layout: {layout}")
 
     if st.button("Suggest Colors"):
-        colors = suggest_colors(mood)
-        st.write(colors)
 
-if generate:
-    with st.spinner("AI creating illustration..."):
-        img = generate_ai_image(scene, style, exaggeration)
+        palette = suggest_colors(mood)
+
+        st.write("Recommended Color Palette:")
+        for color in palette:
+            st.write(f"• {color}")
+
+
+st.divider()
+
+# --- Generate AI Illustration ---
+
+st.header("Generate Illustration")
+
+if st.button("Generate Illustration"):
+
+    with st.spinner("Generating AI illustration..."):
+
+        img = generate_ai_image(
+            scene,
+            style,
+            exaggeration,
+            artist_image
+        )
 
         if img is not None:
+
             st.subheader("AI Illustration")
-            st.image(img, width="stretch")
+
+            st.image(
+                img,
+                width="stretch"
+            )
+
         else:
+
             st.warning("Image generation failed. Try again.")
