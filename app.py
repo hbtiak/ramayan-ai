@@ -65,6 +65,6 @@ if generate:
 
         if img is not None:
             st.subheader("AI Illustration")
-            st.image(img, use_column_width=True)
+            st.image(img, width="stretch")
         else:
             st.warning("Image generation failed. Try again.")
