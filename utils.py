@@ -1,8 +1,8 @@
 import requests
-from PIL import Image
+from PIL import Image, ImageFilter
 from io import BytesIO
+import random
 import streamlit as st
-import cv2
 import numpy as np
 import time
 
@@ -15,39 +15,37 @@ headers = {
 
 def preprocess_sketch(image):
 
-    img = np.array(image)
+    # convert to grayscale
+    gray = image.convert("L")
 
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    # detect edges
+    edges = gray.filter(ImageFilter.FIND_EDGES)
 
-    edges = cv2.Canny(gray, 100, 200)
-
-    edges = cv2.cvtColor(edges, cv2.COLOR_GRAY2RGB)
-
-    return Image.fromarray(edges)
+    # convert back to RGB
+    return edges.convert("RGB")
 
 
 def generate_ai_image(scene, style, exaggeration, artist_image=None):
 
     prompt = f"""
-    Epic Ramayan illustration of {scene}.
+    Epic mythological illustration of {scene}.
     Art style: {style}.
     Character exaggeration level {exaggeration}.
-    Mythological epic artwork.
     Dramatic lighting.
+    Highly detailed artwork.
     """
+
+    files = None
 
     if artist_image is not None:
 
         sketch = preprocess_sketch(artist_image)
 
-        buffered = BytesIO()
-        sketch.save(buffered, format="PNG")
-        buffered.seek(0)
+        buffer = BytesIO()
+        sketch.save(buffer, format="PNG")
+        buffer.seek(0)
 
-        files = {"image": buffered}
-
-    else:
-        files = None
+        files = {"image": buffer}
 
     for _ in range(5):
 
@@ -72,3 +70,27 @@ def generate_ai_image(scene, style, exaggeration, artist_image=None):
 
     st.error("Model took too long to start")
     return None
+
+
+def suggest_layout(scene):
+
+    layouts = [
+        "Hero centered composition",
+        "Low angle dramatic perspective",
+        "Diagonal action layout",
+        "Triangular battle composition"
+    ]
+
+    return random.choice(layouts)
+
+
+def suggest_colors(mood):
+
+    palettes = {
+        "Heroic": ["gold", "deep red", "royal blue"],
+        "Divine": ["white", "gold", "light blue"],
+        "Battle": ["black", "crimson", "dark purple"],
+        "Sunset": ["orange", "pink", "violet"]
+    }
+
+    return palettes.get(mood, [])
