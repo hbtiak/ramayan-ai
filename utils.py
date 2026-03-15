@@ -11,14 +11,16 @@ headers = {
     "Authorization": f"Bearer {st.secrets['HF_TOKEN']}"
 }
 
-def generate_ai_image(scene, style, exaggeration):
+
+def generate_ai_image(scene, style, exaggeration, artist_image=None):
 
     prompt = f"""
-    Epic mythological illustration of {scene},
-    {style} style,
-    exaggeration level {exaggeration},
-    cinematic lighting,
-    highly detailed artwork
+    Epic mythological illustration of {scene}.
+    Art style: {style}.
+    Character exaggeration level {exaggeration}.
+    Dynamic heroic composition.
+    Cinematic lighting.
+    Highly detailed epic artwork.
     """
 
     for _ in range(5):
@@ -60,10 +62,10 @@ def suggest_layout(scene):
 def suggest_colors(mood):
 
     palettes = {
-        "Heroic": ["gold","deep red","royal blue"],
-        "Divine": ["white","gold","light blue"],
-        "Battle": ["black","crimson","dark purple"],
-        "Sunset": ["orange","pink","violet"]
+        "Heroic": ["gold", "deep red", "royal blue"],
+        "Divine": ["white", "gold", "light blue"],
+        "Battle": ["black", "crimson", "dark purple"],
+        "Sunset": ["orange", "pink", "violet"]
     }
 
     return palettes.get(mood, [])
