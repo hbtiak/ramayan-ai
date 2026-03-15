@@ -62,5 +62,9 @@ with right:
 if generate:
     with st.spinner("AI creating illustration..."):
         img = generate_ai_image(scene, style, exaggeration)
-        st.subheader("AI Illustration")
-        st.image(img, use_column_width=True)
+
+        if img is not None:
+            st.subheader("AI Illustration")
+            st.image(img, use_column_width=True)
+        else:
+            st.warning("Image generation failed. Try again.")
