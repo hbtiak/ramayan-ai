@@ -17,15 +17,16 @@ def generate_ai_image(scene, style, exaggeration, artist_image=None):
     style_hint = ""
 
     if artist_image is not None:
-        style_hint = "inspired by the uploaded artist sketch with bold outlines and caricature features"
+        style_hint = "inspired by a bold black ink caricature sketch with strong outlines and expressive exaggerated features"
 
     prompt = f"""
     Epic mythological illustration of {scene}.
     {style_hint}
     Art style: {style}.
     Character exaggeration level {exaggeration}.
+    Dynamic comic-book composition.
     Dramatic cinematic lighting.
-    Highly detailed epic artwork.
+    Highly detailed mythological artwork.
     """
 
     for _ in range(5):
@@ -41,7 +42,7 @@ def generate_ai_image(scene, style, exaggeration, artist_image=None):
             return Image.open(BytesIO(response.content))
 
         if "loading" in response.text.lower():
-            st.warning("Model loading... retrying")
+            st.warning("Model loading on server... retrying")
             time.sleep(8)
             continue
 
@@ -58,7 +59,8 @@ def suggest_layout(scene):
         "Hero centered composition",
         "Low angle dramatic perspective",
         "Diagonal action layout",
-        "Triangular battle composition"
+        "Triangular battle composition",
+        "Wide cinematic battlefield composition"
     ]
 
     return random.choice(layouts)
