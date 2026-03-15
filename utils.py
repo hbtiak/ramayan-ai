@@ -1,32 +1,49 @@
-
+from diffusers import StableDiffusionPipeline
+import torch
 import random
-from PIL import Image, ImageDraw
 
-# Lightweight placeholder generator so the demo runs without heavy AI models
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+pipe = StableDiffusionPipeline.from_pretrained(
+    "runwayml/stable-diffusion-v1-5"
+)
+
+pipe = pipe.to(device)
+
 def generate_ai_image(scene, style, exaggeration):
-    width, height = 768, 512
-    img = Image.new("RGB", (width, height), "white")
-    draw = ImageDraw.Draw(img)
 
-    text = f"Scene: {scene}\nStyle: {style}\nExaggeration: {exaggeration}%"
-    draw.text((40, 200), text, fill="black")
+    prompt = f"""
+    Epic mythological illustration of {scene},
+    {style} style,
+    exaggerated character design level {exaggeration},
+    cinematic lighting,
+    detailed artwork
+    """
 
-    return img
+    image = pipe(prompt).images[0]
+
+    return image
+
 
 def suggest_layout(scene):
+
     layouts = [
-        "Hero centered composition with dramatic sky",
-        "Low angle perspective emphasizing scale",
-        "Diagonal action composition for motion",
-        "Triangular composition for visual tension"
+        "Hero centered composition",
+        "Low angle dramatic perspective",
+        "Diagonal action layout",
+        "Triangular battle composition"
     ]
+
     return random.choice(layouts)
 
+
 def suggest_colors(mood):
+
     palettes = {
-        "Heroic": ["gold", "deep red", "royal blue"],
-        "Divine": ["white", "gold", "light blue"],
-        "Battle": ["black", "crimson", "dark purple"],
-        "Sunset": ["orange", "pink", "violet"]
+        "Heroic": ["gold","deep red","royal blue"],
+        "Divine": ["white","gold","light blue"],
+        "Battle": ["black","crimson","dark purple"],
+        "Sunset": ["orange","pink","violet"]
     }
-    return palettes.get(mood, [])
+
+    return palettes.get(mood,[])
